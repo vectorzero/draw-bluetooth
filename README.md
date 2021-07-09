@@ -1,4 +1,6 @@
-# Vite2.x + Vue3.x + TypeScript Starter
+# draw-bluetooth
+
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
 
 ## 快速开始
 
