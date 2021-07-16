@@ -21,7 +21,8 @@ export default defineComponent({
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 </style>

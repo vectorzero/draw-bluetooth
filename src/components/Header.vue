@@ -1,12 +1,5 @@
 <template>
-  <div class="header">
-    <div class="title" @click="router.push('/')">
-      Vite2.x + Vue3.x + TypeScript Starter
-    </div>
-    <div class="go-github" @click="goGitHub">
-      <i class="icon el-icon-s-promotion"></i> GitHub
-    </div>
-  </div>
+  <div class="header">Bluetooth</div>
 </template>
 
 <script lang="ts" setup>
@@ -21,4 +14,16 @@ const goGitHub = () => {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.header {
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  position: relative;
+  height: 100%;
+  padding-left: 20px;
+  background-color: #fff;
+  border-bottom: 1px solid #dcdfe6;
+}
+</style>

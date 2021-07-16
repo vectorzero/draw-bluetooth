@@ -1,3 +1,4 @@
+import './styles/index.css'
 import { createApp } from 'vue'
 import importUiFramework from '@/utils/import-ui-framework'
 import router from '@/router/index'

@@ -10,9 +10,7 @@
       </div>
 
       <div class="right">
-        <div class="content">
-          <router-view />
-        </div>
+        <router-view />
       </div>
     </div>
   </main>
@@ -33,10 +31,24 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.bottom {
+.main-container {
   display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.top {
+  height: 80px;
+  line-height: 80px;
+}
+.bottom {
+  flex: 1;
+  display: flex;
+  padding: 10px;
 }
 .left {
   margin-right: 20px;
+}
+.right {
+  flex: 1;
 }
 </style>
