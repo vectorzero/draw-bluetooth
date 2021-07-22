@@ -1,6 +1,5 @@
 <template>
-  <aside class="nav">
-    <ul class="nav-list">
+  <!-- <aside class="nav"><ul class="nav-list">
       <li
         class="nav-item flex-center"
         v-for="(nav, index) in navList"
@@ -10,8 +9,13 @@
       >
         {{ nav.name }}
       </li>
-    </ul>
-  </aside>
+    </ul> </aside>-->
+  <el-menu class="left-menu" default-active="0">
+    <el-menu-item v-for="(nav, index) in navList" :key="index" :index="index">
+      <i class="el-icon-menu"></i>
+      <template #title>{{ nav.name }}</template>
+    </el-menu-item>
+  </el-menu>
 </template>
 
 <script lang="ts">
@@ -83,7 +87,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.nav-item {
-  margin-bottom: 10px;
+.left-menu {
+  border-right: 0;
 }
 </style>

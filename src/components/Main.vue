@@ -43,12 +43,13 @@ export default defineComponent({
 .bottom {
   flex: 1;
   display: flex;
-  padding: 10px;
 }
 .left {
-  margin-right: 20px;
+  height: 100%;
+  background: #fff;
 }
 .right {
   flex: 1;
+  padding: 10px;
 }
 </style>
