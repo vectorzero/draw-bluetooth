@@ -31,6 +31,9 @@ export default defineConfig({
     }
   },
   base: './', // 设置打包路径
+  build: {
+    sourcemap: true
+  },
   server: {
     port: 4500, // 设置服务启动端口号
     open: true, // 设置服务启动时是否自动打开浏览器
