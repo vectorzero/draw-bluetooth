@@ -18,7 +18,11 @@ import {
 
 import lang from 'element-plus/lib/locale/lang/zh-cn'
 import 'dayjs/locale/zh-cn'
-locale(lang)
+if (import.meta.env.DEV) {
+  locale(lang)
+} else {
+  locale.use(lang)
+}
 
 export default function importUiFramework(app: App) {
   // 按需载入 Element Plus 组件
