@@ -1,4 +1,4 @@
-class SfPrint {
+class BluetoothPrint {
   /**
    * 初始化纸张
    * 0 整个标签的横向偏移量
@@ -237,4 +237,4 @@ class SfPrint {
     return (this.str = `${this.str}PRINT\r\n`)
   }
 }
-export { SfPrint }
+export { BluetoothPrint }

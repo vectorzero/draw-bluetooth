@@ -1,7 +1,6 @@
 <template>
   <div class="home-container">
     <div class="left">
-      <h4>组件</h4>
       <div v-for="(item, index) in widgetList" :key="index" class="left-item">
         <el-button @click="handleAdd(item)" type="primary" size="mini" class="btn-item">
           {{ item.label }}
@@ -43,7 +42,8 @@
             }"
             v-for="item in renderList"
             :key="item.id"
-            :isActive="true"
+            :minw="20"
+            :minh="20"
             :w="item.width"
             :h="item.height"
             :x="item.left"
@@ -56,44 +56,81 @@
             @dragging="changeDimensions($event, item.id)"
             @resizing="changeDimensions($event, item.id)"
           >
-            <div class="filler"></div>
-            <!-- <div>{{ item.top }} х {{ item.left }}</div>
-            <div>{{ item.width }} х {{ item.height }}</div> -->
+            <div class="filler">
+              <!-- 文本 -->
+              <div
+                v-if="item.type === 'text'"
+                :style="{
+                  'font-size': item.size + 'px',
+                  'font-weight': item.bold
+                }"
+                class="text-view"
+              >
+                {{ item.fieldValue }}
+              </div>
+              <!-- 条形码 -->
+              <img
+                v-if="item.type === 'barCode' && item.barCodeUrl"
+                class="bar-code"
+                :src="item.barCodeUrl"
+              />
+              <!-- 二维码 -->
+              <img
+                v-if="item.type === 'qrCode' && item.qrCodeUrl"
+                class="qr-code"
+                :src="item.qrCodeUrl"
+              />
+            </div>
           </VueDragResize>
         </div>
       </div>
     </div>
     <div class="right">
-      <h4>属性</h4>
       <div v-if="currentWidget.id" class="form-box">
         <el-form ref="form" size="mini" :model="currentWidget" label-width="60px">
-          <el-form-item label="属性">
-            <el-select
-              @change="changeField($event, currentWidget.id)"
-              v-model="currentWidget.fieldLabel"
-              placeholder="选择绑定的属性"
-            >
-              <el-option
-                v-for="v in fieldList"
-                :key="v.label"
-                :label="v.label"
-                :value="v.label"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="字段">
-            <el-input
-              :readonly="Boolean(currentWidget.fieldLabel !== '自定义')"
-              @input="changeInput($event, currentWidget.id, 'fieldName')"
-              v-model="currentWidget.fieldName"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="示例值">
-            <el-input
-              @input="changeInput($event, currentWidget.id, 'fieldValue')"
-              v-model="currentWidget.fieldValue"
-            ></el-input>
-          </el-form-item>
+          <template v-if="currentWidget.type !== 'rect'">
+            <el-form-item>
+              <template #label>
+                <div
+                  style="cursor: pointer"
+                  @click="
+                    jumpToUrl(
+                      'http://qiao.sf-express.com/pages/developDoc/index.html?level2=699213'
+                    )
+                  "
+                  title="点击查看各字段的详细说明"
+                >
+                  <span>属性</span>
+                  <i class="el-icon-info"></i>
+                </div>
+              </template>
+              <el-select
+                @change="changeField($event, currentWidget.id)"
+                v-model="currentWidget.fieldLabel"
+                placeholder="选择绑定的属性"
+              >
+                <el-option
+                  v-for="v in fieldList"
+                  :key="v.label"
+                  :label="v.label"
+                  :value="v.label"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="字段">
+              <el-input
+                :readonly="Boolean(currentWidget.fieldLabel !== '自定义')"
+                @input="changeInput($event, currentWidget.id, 'fieldName')"
+                v-model="currentWidget.fieldName"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="示例值">
+              <el-input
+                @input="changeInput($event, currentWidget.id, 'fieldValue')"
+                v-model="currentWidget.fieldValue"
+              ></el-input>
+            </el-form-item>
+          </template>
           <el-form-item label="类型">
             <el-input readonly v-model="currentWidget.typeName"></el-input>
           </el-form-item>
@@ -118,32 +155,33 @@
               v-model="currentWidget.zIndex"
             ></el-input>
           </el-form-item>
-          <template v-if="currentWidget.type !== 'text'">
-            <el-form-item label="宽度">
-              <el-input
-                type="number"
-                @input="changeInput($event, currentWidget.id, 'width')"
-                v-model="currentWidget.width"
-              >
-                <template #append>px</template>
-              </el-input>
-            </el-form-item>
-            <el-form-item label="高度">
-              <el-input
-                type="number"
-                @input="changeInput($event, currentWidget.id, 'height')"
-                v-model="currentWidget.height"
-              >
-                <template #append>px</template>
-              </el-input>
-            </el-form-item>
-          </template>
-          <template v-else>
+          <el-form-item label="宽度">
+            <el-input
+              type="number"
+              @input="changeInput($event, currentWidget.id, 'width')"
+              v-model="currentWidget.width"
+            >
+              <template #append>px</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="高度">
+            <el-input
+              type="number"
+              @input="changeInput($event, currentWidget.id, 'height')"
+              v-model="currentWidget.height"
+            >
+              <template #append>px</template>
+            </el-input>
+          </el-form-item>
+          <template v-if="currentWidget.type === 'text'">
             <el-form-item label="大小">
               <el-input
+                type="number"
                 @input="changeInput($event, currentWidget.id, 'size')"
                 v-model="currentWidget.size"
-              ></el-input>
+              >
+                <template #append>px</template>
+              </el-input>
             </el-form-item>
             <el-form-item label="字重">
               <el-input
@@ -206,6 +244,7 @@
 <script>
 import { defineComponent, reactive, toRefs, onMounted } from 'vue'
 import VueDragResize from 'vue-drag-resize'
+import { textToBase64BarCode, textToBase64QrCode } from '@/utils/index'
 
 export default defineComponent({
   name: 'Home',
@@ -230,8 +269,16 @@ export default defineComponent({
       ],
       fieldList: [
         { name: '', label: '自定义' },
+        { name: 'masterWaybillNo', label: '主运单号' },
+        { name: 'branchWaybillNo', label: '子运单号' },
+        { name: 'backWaybillNo', label: '签回单号' },
+        { name: 'seq', label: '子件运单顺序' },
+        { name: 'sum', label: '子母件运单总数' },
+        { name: 'printNum', label: '打印次数' },
+        { name: 'printDateTime', label: '打印时间' },
         { name: 'proCode', label: '时效类型' },
         { name: 'destRouteLabel', label: '目的地' },
+        { name: 'destTeamCode', label: '单元区域编码' },
         { name: 'fromName', label: '姓名（寄）' },
         { name: 'fromPhone', label: '电话（寄）' },
         { name: 'fromOrgName', label: '公司（寄）' },
@@ -239,7 +286,38 @@ export default defineComponent({
         { name: 'toName', label: '姓名（收）' },
         { name: 'toPhone', label: '电话（收）' },
         { name: 'toOrgName', label: '公司（收）' },
-        { name: 'toAddress', label: '地址（收）' }
+        { name: 'toAddress', label: '地址（收）' },
+        // { name: 'isCod', label: '是否代收货款' },
+        // { name: 'isPod', label: '是否回单' },
+        { name: 'payment', label: '付款方式' },
+        { name: 'codingMapping', label: '进港映射码' },
+        { name: 'twoDimensionCode', label: '二维码信息' },
+        // { name: 'abFlag', label: '	电子产品类型图标' },
+        { name: 'codingMappingOut', label: '出港信息' },
+        { name: 'incrementService', label: '增值服务' },
+        // { name: 'incrementServiceList', label: '	增值服务明细列表' },
+        { name: 'entrustedArticles', label: '托寄物' },
+        { name: 'orderNo', label: '订单号' },
+        { name: 'packageNumber', label: '件数' },
+        { name: 'chargedWeight', label: '计费重量' },
+        { name: 'actualWeight', label: '实际重量' },
+        { name: 'costTotal', label: '费用合计' },
+        { name: 'remark', label: '备注' },
+        { name: 'productType', label: '产品类型' },
+        { name: 'proName', label: '产品名称' },
+        { name: 'sourceTransferCode', label: '出港中转场代码' },
+        { name: 'receiptTime', label: '收货时间' },
+        { name: 'displayFee', label: '显示费用' },
+        // { name: 'printIcons', label: '图标名称' },
+        { name: 'transPrice', label: '运费' },
+        { name: 'collectMoney', label: '代收货款金额' },
+        { name: 'signReturn', label: '签单返还金额' },
+        { name: 'monthlyCount', label: '月结账号' },
+        { name: 'packPrice', label: '包装费用' },
+        { name: 'insurePrice', label: '保价费用' },
+        { name: 'freshPrice', label: '保鲜费用' },
+        { name: 'installPrice', label: '安装费用' },
+        { name: 'declaredValue', label: '声报价值' }
       ]
     })
 
@@ -262,7 +340,7 @@ export default defineComponent({
       switch (item.name) {
         case 'rect':
           typeObj = {
-            width: 100,
+            width: 200,
             height: 100,
             borderTop: 1,
             borderRight: 1,
@@ -286,8 +364,10 @@ export default defineComponent({
           break
         case 'text':
           typeObj = {
-            size: 1,
-            bold: 1
+            width: 100,
+            height: 20,
+            size: 12,
+            bold: 400
           }
           break
         default:
@@ -305,6 +385,12 @@ export default defineComponent({
         if (item.id === id) {
           const copyItem = Object.assign({}, item)
           copyItem[prop] = val
+          if (item.type === 'barCode' && item.fieldValue) {
+            copyItem.barCodeUrl = textToBase64BarCode(item.fieldValue)
+          }
+          if (item.type === 'qrCode' && item.fieldValue) {
+            copyItem.qrCodeUrl = textToBase64QrCode(item.fieldValue)
+          }
           renderList.push(copyItem)
         } else {
           renderList.push(item)
@@ -347,12 +433,17 @@ export default defineComponent({
       state.currentWidget = copyItem
     }
 
+    const jumpToUrl = (url) => {
+      window.open(url)
+    }
+
     return {
       ...toRefs(state),
       handleAdd,
       changeDimensions,
       changeInput,
-      changeField
+      changeField,
+      jumpToUrl
     }
   }
 })
@@ -394,6 +485,9 @@ export default defineComponent({
   box-sizing: content-box;
   border: 1px solid #000;
   position: relative;
+  background: -webkit-linear-gradient(top, transparent 9px, #ccc 10px),
+    -webkit-linear-gradient(left, transparent 9px, #ccc 10px);
+  background-size: 10px 10px;
 }
 .right {
   width: 200px;
@@ -404,5 +498,19 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   background: #fff;
+}
+.text-view {
+  height: 100%;
+  overflow-y: hidden;
+  word-break: break-all;
+  color: #000;
+}
+.bar-code {
+  width: 100%;
+  height: 100%;
+}
+.qr-code {
+  width: 100%;
+  height: 100%;
 }
 </style>
